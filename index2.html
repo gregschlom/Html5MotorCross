@@ -92,20 +92,45 @@
   var world = new b2World(worldAABB, gravity, true); // true is for allowSleep
   
   var throttle = 0;
-  var MAX_SPEED = 100;
-  var circleBody;
+  var MAX_SPEED = 300;
+  var bike;
   
   function setupWorld() {
-    // Create body
-    var circleSd = new b2CircleDef();
-    circleSd.density = 1.0;
-    circleSd.radius = 20;
-    circleSd.restitution = 1.0; 
-    circleSd.friction = 0;
-    var circleBd = new b2BodyDef();
-    circleBd.AddShape(circleSd);
-    circleBd.position.Set(100, 0);
-    circleBody = world.CreateBody(circleBd);
+    // Create the motorbike
+    var rearWheel = new b2CircleDef();
+    rearWheel.density = 1.0;
+    rearWheel.restitution = 1.0; 
+    rearWheel.friction = 0;
+    rearWheel.localPosition.x = 0;
+    rearWheel.localPosition.y = 0;
+    rearWheel.radius = 20;
+    
+    
+    var frontWheel = new b2CircleDef();
+    frontWheel.density = 1.0;
+    frontWheel.restitution = 1.0; 
+    frontWheel.friction = 0;
+    frontWheel.localPosition.x = 80;
+    frontWheel.localPosition.y = -10;
+    frontWheel.radius = 30;
+    
+    var frame = new b2BoxDef()
+    frame.density = 1.0;
+    frame.restitution = 1.0; 
+    frame.friction = 0;
+    frame.extents.x = 55;
+    frame.extents.y = 8;
+    frame.localRotation = -0.1 * Math.PI;
+    frame.localPosition.x = 40;
+    frame.localPosition.y = -30;
+    
+    var bikeBd = new b2BodyDef();
+    bikeBd.AddShape(frontWheel);
+    bikeBd.AddShape(rearWheel);
+    bikeBd.AddShape(frame);
+    bikeBd.position.Set(100, 30);
+    
+    bike = world.CreateBody(bikeBd);
   }
   
   // Repeat
@@ -117,11 +142,11 @@
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     
     // Update the circle velocity
-    var vel = circleBody.GetLinearVelocity();
+    var vel = bike.GetLinearVelocity();
     vel.x += throttle;
     if (vel.x > MAX_SPEED)  { vel.x = MAX_SPEED; }
     if (vel.x < -MAX_SPEED) {vel.x = -MAX_SPEED; }
-    circleBody.SetLinearVelocity(vel);
+    bike.SetLinearVelocity(vel);
    
     drawWorld(world, ctx);
     setTimeout('step(' + (cnt || 0) + ')', 10);
