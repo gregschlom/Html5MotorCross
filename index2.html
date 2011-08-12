@@ -105,8 +105,7 @@
     rearWheel.friction = 0;
     rearWheel.localPosition.x = 0;
     rearWheel.localPosition.y = 0;
-    rearWheel.radius = 20;
-    
+    rearWheel.radius = 20;    
     
     var frontWheel = new b2CircleDef();
     frontWheel.density = 1.0;
@@ -133,6 +132,27 @@
     bikeBd.position.Set(100, 30);
     
     bike = world.CreateBody(bikeBd);
+
+	var groundSd = new b2BoxDef();
+	groundSd.extents.Set(100, 10);
+	groundSd.restitution = 0.5;
+	groundSd.localRotation = -0.15 * Math.PI;
+	var groundBd = new b2BodyDef();
+	groundBd.AddShape(groundSd);
+	groundBd.position.Set(290, 485);
+	world.CreateBody(groundBd);
+
+	var groundSd1 = new b2BoxDef();
+	groundSd1.extents.Set(100, 10);
+	groundSd1.restitution = 0.5;
+	groundSd1.localRotation = 0.1 * Math.PI;
+	var groundBd1 = new b2BodyDef();
+	groundBd1.AddShape(groundSd1);
+	groundBd1.position.Set(100, 500);
+	return world.CreateBody(groundBd1);
+
+	
+    
   }
   
   // Repeat
