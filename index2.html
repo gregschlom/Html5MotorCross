@@ -93,6 +93,8 @@
   
   var throttle = 0;
   var MAX_SPEED = 300;
+  var rotation = 0;
+  var MAX_ROTATION = 0.5;
   var bike;
   
   function setupWorld() {
@@ -141,12 +143,19 @@
     world.Step(1.0/60, 1);
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     
-    // Update the circle velocity
+    // Update the bike velocity
     var vel = bike.GetLinearVelocity();
     vel.x += throttle;
     if (vel.x > MAX_SPEED)  { vel.x = MAX_SPEED; }
     if (vel.x < -MAX_SPEED) {vel.x = -MAX_SPEED; }
     bike.SetLinearVelocity(vel);
+   
+    // Update the bike rotation
+    var rot = bike.GetAngularVelocity();
+    rot += rotation;
+    //if (rot > MAX_ROTATION)  { vel.x = MAX_SPEED; }
+    //if (rot < -MAX_SPEED) {vel.x = -MAX_SPEED; }
+    bike.SetAngularVelocity(rot);
    
     drawWorld(world, ctx);
     setTimeout('step(' + (cnt || 0) + ')', 10);
@@ -176,6 +185,13 @@
       case KEY_LEFT:
         throttle = -10;
         break;
+        
+      case KEY_UP: 
+        rotation = 0.1;
+        break;
+      case KEY_DOWN:
+        rotation = -0.1;
+        break;
     }
   });
   
@@ -185,6 +201,10 @@
       case KEY_LEFT:
         throttle = 0;
       break;
+      case KEY_UP: 
+      case KEY_DOWN:
+        rotation = 0;
+        break;      
     }
   });
   </script>
