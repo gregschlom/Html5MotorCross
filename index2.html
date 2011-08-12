@@ -106,23 +106,28 @@
     // Create joint
     
     
-    	var points = [[45, 500], // top left
-                    [45, 520], 
-                    [300, 520], 
-                    [400, 440], 
-                    [250, 480],
-                    [200, 500]];
-      var polySd1 = new b2PolyDef();
+	var points =  [ [-50,-50], // top left
+					[-50,50], 
+					[50,50],
+					[50,-50] ];
+
+
+/*      var polySd1 = new b2PolyDef();
       polySd1.vertexCount = points.length;
       for (var i = 0; i < points.length; i++) {
         polySd1.vertices[i].Set(points[i][0], points[i][1]);
       }
-      //polySd1.localPosition.Set(200, 0)
-      polySd1.density = 1.0;
+*/      //polySd1.localPosition.Set(200, 0)
+
+
+	var polySd1 = new b2BoxDef();
+	polySd1.extents.Set(50, 5);
+	polySd1.density = 1.0;
+	
       
       var polyBd = new b2BodyDef();
       polyBd.AddShape(polySd1);
-      polyBd.position.Set(200,20);
+      polyBd.position.Set(100,500);
       return world.CreateBody(polyBd)
 
   }
