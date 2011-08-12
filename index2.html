@@ -91,6 +91,10 @@
   var gravity = new b2Vec2(0, 300);
   var world = new b2World(worldAABB, gravity, true); // true is for allowSleep
   
+  var velocity = new b2Vec2(0, -10);
+  var velocityChanged = false;
+  var circleBody;
+  
   function setupWorld() {
     // Create body
     var circleSd = new b2CircleDef();
@@ -101,30 +105,7 @@
     var circleBd = new b2BodyDef();
     circleBd.AddShape(circleSd);
     circleBd.position.Set(100, 0);
-    var circleBody = world.CreateBody(circleBd);
-    
-    // Create joint
-    
-    
-    	var points = [[45, 500], // top left
-                    [45, 520], 
-                    [300, 520], 
-                    [400, 440], 
-                    [250, 480],
-                    [200, 500]];
-      var polySd1 = new b2PolyDef();
-      polySd1.vertexCount = points.length;
-      for (var i = 0; i < points.length; i++) {
-        polySd1.vertices[i].Set(points[i][0], points[i][1]);
-      }
-      //polySd1.localPosition.Set(200, 0)
-      polySd1.density = 1.0;
-      
-      var polyBd = new b2BodyDef();
-      polyBd.AddShape(polySd1);
-      polyBd.position.Set(200,20);
-      return world.CreateBody(polyBd)
-
+    circleBody = world.CreateBody(circleBd);
   }
   
   // Repeat
@@ -134,6 +115,14 @@
   function step(cnt) {
     world.Step(1.0/60, 1);
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    
+    if (velocityChanged) {
+      var lol = circleBody.GetLinearVelocity();
+      lol.x = velocity.x;
+      circleBody.SetLinearVelocity(lol);
+      velocityChanged = false;
+    }
+    
     drawWorld(world, ctx);
     setTimeout('step(' + (cnt || 0) + ')', 10);
   }
@@ -146,6 +135,28 @@
     canvasWidth = parseInt(canvasElm.width);
     canvasHeight = parseInt(canvasElm.height);
     step();
+  });
+  
+  var KEY_LEFT = 37;
+  var KEY_UP = 38;
+  var KEY_RIGHT = 39;
+  var KEY_DOWN = 40;
+  
+ 
+
+  Event.observe(window, 'keydown', function(event) {
+    switch(event.keyCode) {
+      case KEY_RIGHT:
+        velocity.x += 50;
+        velocityChanged = true;
+        //circleBody.SetLinearVelocity(velocity);
+      break;
+      case KEY_LEFT:
+        velocity.x -= 50;
+        velocityChanged = true;
+        //circleBody.SetLinearVelocity(velocity);
+      break;
+    }
   });
   </script>
     
