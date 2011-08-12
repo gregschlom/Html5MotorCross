@@ -96,7 +96,7 @@
     var circleSd = new b2CircleDef();
     circleSd.density = 1.0;
     circleSd.radius = 20;
-    circleSd.restitution = 1.0; 
+    circleSd.restitution = 0.5; 
     circleSd.friction = 0;
     var circleBd = new b2BodyDef();
     circleBd.AddShape(circleSd);
@@ -106,29 +106,50 @@
     // Create joint
     
     
-	var points =  [ [-50,-50], // top left
+	var points =  [ [-50,-100], // top left
 					[-50,50], 
-					[50,50],
-					[50,-50] ];
+					[500,50],
+					[500,-100],
+					[400,-25],
+					[300,0]];
 
 
-/*      var polySd1 = new b2PolyDef();
+      var polySd1 = new b2PolyDef();
       polySd1.vertexCount = points.length;
       for (var i = 0; i < points.length; i++) {
         polySd1.vertices[i].Set(points[i][0], points[i][1]);
       }
-*/      //polySd1.localPosition.Set(200, 0)
+		//polySd1.localPosition.Set(200, 0)
 
-
-	var polySd1 = new b2BoxDef();
+/*	var polySd1 = new b2BoxDef();
 	polySd1.extents.Set(50, 5);
-	polySd1.density = 1.0;
+*/
+	polySd1.restitution = 0.2;
+
+	var groundSd = new b2BoxDef();
+	groundSd.extents.Set(100, 10);
+	groundSd.restitution = 0.5;
+	groundSd.localRotation = -0.15 * Math.PI;
+	var groundBd = new b2BodyDef();
+	groundBd.AddShape(groundSd);
+	groundBd.position.Set(290, 485);
+	world.CreateBody(groundBd);
+
+	var groundSd1 = new b2BoxDef();
+	groundSd1.extents.Set(100, 10);
+	groundSd1.restitution = 0.5;
+	groundSd1.localRotation = 0.1 * Math.PI;
+	var groundBd1 = new b2BodyDef();
+	groundBd1.AddShape(groundSd1);
+	groundBd1.position.Set(100, 500);
+	return world.CreateBody(groundBd1);
+
 	
       
-      var polyBd = new b2BodyDef();
+/*      var polyBd = new b2BodyDef();
       polyBd.AddShape(polySd1);
       polyBd.position.Set(100,500);
-      return world.CreateBody(polyBd)
+      return world.CreateBody(polyBd)*/
 
   }
   
