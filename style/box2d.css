@@ -3,5 +3,5 @@
 	margin:0; 
 	border:1px solid white;
 	position:absolute; 
-	background-color:#333388;
+	background: url('bg.jpg') no-repeat;
 }
