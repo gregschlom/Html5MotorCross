@@ -1,6 +1,7 @@
 body {
   font-family: 'Droid Sans',arial,serif;
 	background-color:#999;
+	text-shadow:0px 1px 1px #fff;
 }
 
 #canvas {
@@ -12,7 +13,7 @@ body {
 	background: url('bg.jpg') no-repeat;
 }
 
-#footer {
+footer {
   position: absolute;
   left: 980px;
   top: 20px;
@@ -24,9 +25,12 @@ h1, h2 {
 	float:left;
 	padding-bottom:0;
 	font-weight: 500;
-	text-shadow:0px 1px 1px #fff;
 }
 
 h2 {
 	padding:7px 0px 0px 10px;
+}
+img {
+	border-radius: 5px;
+	box-shadow: 1px 2px 3px #333;
 }

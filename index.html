@@ -1,13 +1,14 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Box2DJS - Physics Engine for JavaScript</title>
+		<meta charset="utf-8">
+		<title>Box2DJS - Physics Engine for JavaScript</title>
 
 		<!--=============================-->
 		<!-- Copy this part to your app. -->
 		<!-- START                       -->
 		<!--=============================-->
+<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Droid+Sans" type="text/css">
     <script src="lib/prototype-1.6.0.2.js"></script>
 
 		<!-- box2djs -->
@@ -80,19 +81,172 @@
 		<!-- END                         -->
 		<!--=============================-->
 
-		<!-- demos -->
-    <script src='demos/draw_world.js'></script>
-    <script src='demos/demo_base.js'></script>
-    <script src='demos/top.js'></script>
-    <script src='demos/stack.js'></script>
-    <script src='demos/compound.js'></script>
-    <script src='demos/pendulum.js'></script>
-    <script src='demos/crank.js'></script>
-    <script src='demos/demos.js'></script>
+    
+    <script src='js/draw_world.js'></script>
+    
+  <script>
+  // Create world
+  var worldAABB = new b2AABB();
+  worldAABB.minVertex.Set(-1000, -1000);
+  worldAABB.maxVertex.Set(2000, 2000);
+  var gravity = new b2Vec2(0, 300);
+  var world = new b2World(worldAABB, gravity, true); // true is for allowSleep
+  
+  var throttle = 0;
+  var MAX_SPEED = 300;
+  var rotation = 0;
+  var MAX_ROTATION = 0.5;
+  var bike;
+  
+  function setupWorld() {
+    // Create the motorbike
+    var rearWheel = new b2CircleDef();
+    rearWheel.density = 1.0;
+    rearWheel.restitution = 0.2; 
+    rearWheel.friction = 0;
+    rearWheel.localPosition.x = 0;
+    rearWheel.localPosition.y = 0;
+    rearWheel.radius = 20;    
+    
+    var frontWheel = new b2CircleDef();
+    frontWheel.density = 1.0;
+    frontWheel.restitution = 0.2; 
+    frontWheel.friction = 0;
+    frontWheel.localPosition.x = 80;
+    frontWheel.localPosition.y = -10;
+    frontWheel.radius = 30;
+    
+    var frame = new b2BoxDef()
+    frame.density = 1.0;
+    frame.restitution = 1.0; 
+    frame.friction = 0;
+    frame.extents.x = 55;
+    frame.extents.y = 8;
+    frame.localRotation = -0.1 * Math.PI;
+    frame.localPosition.x = 40;
+    frame.localPosition.y = -30;
+    
+    var bikeBd = new b2BodyDef();
+    bikeBd.AddShape(frontWheel);
+    bikeBd.AddShape(rearWheel);
+    bikeBd.AddShape(frame);
+    bikeBd.position.Set(50, 300);
+    
+    bike = world.CreateBody(bikeBd);
 
+	var groundSd = new b2BoxDef();
+	groundSd.extents.Set(100, 10);
+	groundSd.restitution = 0.5;
+	groundSd.localRotation = -0.15 * Math.PI;
+	var groundBd = new b2BodyDef();
+	groundBd.AddShape(groundSd);
+	groundBd.position.Set(290, 485);
+	world.CreateBody(groundBd);
+
+	var groundSd1 = new b2BoxDef();
+	groundSd1.extents.Set(100, 10);
+	groundSd1.restitution = 0.5;
+	groundSd1.localRotation = 0.1 * Math.PI;
+	var groundBd1 = new b2BodyDef();
+	groundBd1.AddShape(groundSd1);
+	groundBd1.position.Set(100, 500);
+	world.CreateBody(groundBd1);
+
+	var groundSd2 = new b2BoxDef();
+	groundSd2.extents.Set(100, 10);
+	groundSd2.restitution = 0.5;
+	var groundBd2 = new b2BodyDef();
+	groundBd2.AddShape(groundSd2);
+	groundBd2.position.Set(800, 550);
+	world.CreateBody(groundBd2);
+    
+  }
+  
+  // Repeat
+  var ctx;
+  var canvasWidth; 
+  var canvasHeight; 
+  function step(cnt) {
+    world.Step(1.0/60, 1);
+    ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+    
+    // Update the bike velocity
+    var vel = bike.GetLinearVelocity();
+    vel.x += throttle;
+    if (vel.x > MAX_SPEED)  { vel.x = MAX_SPEED; }
+    if (vel.x < -MAX_SPEED) {vel.x = -MAX_SPEED; }
+    bike.SetLinearVelocity(vel);
+   
+    // Update the bike rotation
+    var rot = bike.GetAngularVelocity();
+    rot += rotation;
+    //if (rot > MAX_ROTATION)  { vel.x = MAX_SPEED; }
+    //if (rot < -MAX_SPEED) {vel.x = -MAX_SPEED; }
+    bike.SetAngularVelocity(rot);
+   
+    drawWorld(world, ctx);
+    setTimeout('step(' + (cnt || 0) + ')', 10);
+  }
+  
+  
+  Event.observe(window, 'load', function() {
+    setupWorld(world);
+    ctx = $('canvas').getContext('2d');
+    var canvasElm = $('canvas');
+    canvasWidth = parseInt(canvasElm.width);
+    canvasHeight = parseInt(canvasElm.height);
+    step();
+  });
+  
+  
+  var KEY_LEFT = 37;
+  var KEY_UP = 38;
+  var KEY_RIGHT = 39;
+  var KEY_DOWN = 40;
+  
+  Event.observe(window, 'keydown', function(event) {
+    switch(event.keyCode) {
+      case KEY_RIGHT: 
+        throttle = 10;
+        break;
+      case KEY_LEFT:
+        throttle = -10;
+        break;
+        
+      case KEY_UP: 
+        rotation = 0.1;
+        break;
+      case KEY_DOWN:
+        rotation = -0.1;
+        break;
+    }
+  });
+  
+    Event.observe(window, 'keyup', function(event) {
+    switch(event.keyCode) {
+      case KEY_RIGHT:
+      case KEY_LEFT:
+        throttle = 0;
+      break;
+      case KEY_UP: 
+      case KEY_DOWN:
+        rotation = 0;
+        break;      
+    }
+  });
+  </script>
+    
 		<link href="style/box2d.css" rel="stylesheet" type="text/css" />
   </head>
 <body>
-  <canvas id="canvas" width='500' height='300' style="top:0px; left:0px;"></canvas>
+	<hgroup>
+		<h1>Schlomoff-Dybskiy Motocross</h1>
+		<h2> by Gregory Schlomoff and Yuriy Dybskiy</h2>
+	</hgroup>
+	<canvas id="canvas" width='1000' height='600'></canvas>
+  <footer>
+    <h3>Buy new tires</h3>
+    <img src="img/googlecheckout.png" />
+  </footer>
 </body>
 </html>
