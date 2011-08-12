@@ -91,8 +91,8 @@
   var gravity = new b2Vec2(0, 300);
   var world = new b2World(worldAABB, gravity, true); // true is for allowSleep
   
-  var velocity = new b2Vec2(0, -10);
-  var velocityChanged = false;
+  var throttle = 0;
+  var MAX_SPEED = 100;
   var circleBody;
   
   function setupWorld() {
@@ -116,13 +116,13 @@
     world.Step(1.0/60, 1);
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     
-    if (velocityChanged) {
-      var lol = circleBody.GetLinearVelocity();
-      lol.x = velocity.x;
-      circleBody.SetLinearVelocity(lol);
-      velocityChanged = false;
-    }
-    
+    // Update the circle velocity
+    var vel = circleBody.GetLinearVelocity();
+    vel.x += throttle;
+    if (vel.x > MAX_SPEED)  { vel.x = MAX_SPEED; }
+    if (vel.x < -MAX_SPEED) {vel.x = -MAX_SPEED; }
+    circleBody.SetLinearVelocity(vel);
+   
     drawWorld(world, ctx);
     setTimeout('step(' + (cnt || 0) + ')', 10);
   }
@@ -137,24 +137,28 @@
     step();
   });
   
+  
   var KEY_LEFT = 37;
   var KEY_UP = 38;
   var KEY_RIGHT = 39;
   var KEY_DOWN = 40;
   
- 
-
   Event.observe(window, 'keydown', function(event) {
     switch(event.keyCode) {
-      case KEY_RIGHT:
-        velocity.x += 50;
-        velocityChanged = true;
-        //circleBody.SetLinearVelocity(velocity);
-      break;
+      case KEY_RIGHT: 
+        throttle = 10;
+        break;
       case KEY_LEFT:
-        velocity.x -= 50;
-        velocityChanged = true;
-        //circleBody.SetLinearVelocity(velocity);
+        throttle = -10;
+        break;
+    }
+  });
+  
+    Event.observe(window, 'keyup', function(event) {
+    switch(event.keyCode) {
+      case KEY_RIGHT:
+      case KEY_LEFT:
+        throttle = 0;
       break;
     }
   });
